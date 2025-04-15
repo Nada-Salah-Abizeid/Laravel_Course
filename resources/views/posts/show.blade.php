@@ -21,7 +21,7 @@
             <th>{{$post->id}}</th>
             <th>{{$post->title}}</th>
             <th>{{$post->body}}</th>
-            <td>{{ $post->user_id}}</td>
+            <td>{{ $post->user->name}}</td>
             <td>
                 @if ($post->image)
                     <img src="{{ asset('storage/' . $post->image) }}" alt="Post Image" style="max-width: 150px;">
