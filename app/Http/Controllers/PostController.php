@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -27,11 +28,14 @@ class PostController extends Controller
         $post= new Post($request->validated());
         $post->title=$request->title;
         $post->body=$request->body;
-        $post->user_id=$request->user_id;
+        $post->user_id=Auth::user()->id;
+        
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('uploads', 'public');
-            $post->image = $path;
-        }              
+            $image = $request->file('image');            
+            $image->storeAs('storage/images/', $image->getClientOriginalName());
+            $post->image = $image->getClientOriginalName();            
+        }
+                 
         $post->save();
 
         return redirect()->route('posts.index');
@@ -49,10 +53,16 @@ class PostController extends Controller
         $post->title=$request->title;
         $post->body=$request->body;
         $post->user_id=$request->user_id;
+        
         if ($request->hasFile('image')) {
-            $filename = $request->file('image')->store('uploads', 'public');
-            $post->image = $filename;
-        }    
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/images', $imageName);
+            $post->image = $imageName;  // Update the image name in the database
+        }
+    
+
+        
         $post->save();
 
         return redirect()->route('posts.index');
